@@ -9,3 +9,4 @@ void main(){ int numCount; scanf("%d", &numCount);
  bool visit[100]; int visitCount = 0; int resultCount = 0;
  //초기화 for (int i = 0; i < 10; i++) {  for (int j = 0; j < 10; j++)  {   //searchArr[i][j] = (char) i + (char)j  } }
  SearchDfs(visit, visitCount, 10);}
+
