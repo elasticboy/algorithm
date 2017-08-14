@@ -22,9 +22,9 @@ typedef struct Room
 int main(void)
  {
 	// https://www.acmicpc.net/problem/12761
-	// 13458¹ø ¹®Á¦
-	// ½ÃÇè °¨µ¶ 
-	// ¿À´ä
+	// 13458ë²ˆ ë¬¸ì œ
+	// ì‹œí—˜ ê°ë… 
+	// ì˜¤ë‹µ
 
 	//freopen("input.txt", "r", stdin);
 	setbuf(stdout, NULL);
