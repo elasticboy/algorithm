@@ -15,8 +15,8 @@ int total = 0;
 int main(void)
 {
 	// https://www.acmicpc.net/problem/1193
-	// 1193¹ø ¹®Á¦
-	// ºÐ¼öÃ£±â
+	// 1193ë²ˆ ë¬¸ì œ
+	// ë¶„ìˆ˜ì°¾ê¸°
 
 	//freopen("input.txt", "r", stdin);
 	setbuf(stdout, NULL);
