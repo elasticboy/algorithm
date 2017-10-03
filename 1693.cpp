@@ -24,7 +24,7 @@ int cache[MAX][Color::SIZE];
 
 int GetColor(int pos, Color color)
 {
-	int ret = cache[pos][color];
+	int& ret = cache[pos][color];
 
 	if (ret != -1)
 		return ret;
