@@ -1,161 +1,230 @@
-
-
 #include <stdio.h>
 #include <iostream>
-#include <string.h>
+#include <algorithm>
 #include <queue>
 
 using namespace std;
 
-#define Wall 3
+#define MAX 8 
+#define WALL_MAX 3
 
-typedef struct Virus
-{
-	int row;
-	int col;
-	bool visited;
+typedef struct Area {
+	int posX;
+	int posY;
 	int value;
-}Virus;
 
-Virus** virusMatrix;
+	bool visited;
+	
 
-int wallCount = Wall;
-int rowSize = 0, colSize = 0;
-int T, test_case;
+}Area;
 
-void PrintVirusMatrix()
+Area area[MAX][MAX];
+Area usingArea[MAX][MAX];
+
+
+int width, height;
+
+void InitTotalArea();
+void InitArea();
+void InitUsingArea();
+void PrintArea();
+void BFS();
+void DFS(int posX, int posY, int wall_count);
+void Execute();
+int CalSafeArea();
+
+int ans = -1;
+
+
+
+void InitTotalArea()
 {
-	for (int i = 0; i < rowSize; i++)
+	for (int i = 0; i < MAX; i++)
 	{
-		for (int j = 0; j < colSize; j++)
+		for (int j = 0; j < MAX; j++)
 		{
-			printf("%d ", virusMatrix[i][j].value);
+			area[i][j].posX = 0;
+			area[i][j].posY = 0;
+			area[i][j].value = 0;
+			area[i][j].visited = false;
 
 		}
-		printf("\n");
+	}
+}
+
+void InitUsingArea()
+{
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			usingArea[i][j].posX = area[i][j].posX;
+			usingArea[i][j].posY = area[i][j].posY;
+			usingArea[i][j].value = area[i][j].value;
+			usingArea[i][j].visited = area[i][j].visited;
+
+		}
+	}
+}
+
+void InitArea()
+{
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			area[i][j].posX = i;
+			area[i][j].posY = j;
+
+			scanf("%d", &area[i][j].value);
+		}
+	}
+}
+
+void BFS()
+{
+	queue<Area> virusQ;
+
+	int dx[4] = { 0,0,-1,1 };
+	int dy[4] = { -1,1,0,0 };
+
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			if (usingArea[i][j].value == 2)
+			{
+				virusQ.push(usingArea[i][j]);
+			}
+		}
+	}
+
+	while (!virusQ.empty())
+	{
+		Area front = virusQ.front();
+		virusQ.pop();
+
+		int newX = 0;
+		int newY = 0;
+
+		for (int i = 0; i < 4; i++)
+		{
+			newX = front.posX + dx[i];
+			newY = front.posY + dy[i];
+
+
+			if (newX >= 0 && newX < height && newY >= 0 && newY < width)
+			{
+				if (usingArea[newX][newY].value == 0)
+				{
+					usingArea[newX][newY].value = 2;
+
+					//PrintArea();
+					virusQ.push(usingArea[newX][newY]);
+
+					//cout << endl;
+				}
+			}
+
+		}
+	}
+}
+
+void DFS(int posX, int posY, int wall_count)		//벽을 3개씩 새워가며 BFS 진행
+{
+	usingArea[posX][posY].value = 1;
+	usingArea[posX][posY].visited = true;
+
+	if (wall_count == WALL_MAX)
+	{
+		BFS();
+		ans = max(ans, CalSafeArea());
+		return;
+	}
+
+
+	for (int i = posX; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			if (usingArea[i][j].value != 0 || usingArea[i][j].visited)
+				continue;
+
+			DFS(i, j, wall_count + 1);
+		}
 	}
 
 }
 
+
+void PrintArea()
+{
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			printf("%d ", usingArea[i][j].value);
+
+		}
+
+		cout << endl; 
+	}
+}
+
+void Execute()
+{
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			if (usingArea[i][j].value != 0)
+				continue;
+
+			DFS(i, j, 1);
+
+		}
+	}
+}
+
+
 int CalSafeArea()
 {
 	int count = 0;
-
-	for (int i = 0; i < rowSize; i++)
+	for (int i = 0; i < height; i++)
 	{
-		for (int j = 0; j < colSize; j++)
+		for (int j = 0; j < width; j++)
 		{
-			if (virusMatrix[i][j].value == 0)
-				count++;
-		}
-		printf("\n");
-	}
+			if (usingArea[i][j].value == 0)
+				++count;
 
-	printf("safe area count : %d\n",count );
+
+			//초기화
+			usingArea[i][j].value = area[i][j].value;
+			usingArea[i][j].visited = area[i][j].visited;
+
+
+		}
+
+	}
 
 	return count;
 }
 
 int main(void)
 {
-	// https://www.acmicpc.net/problem/9251
-	// 14502번 문제
-	// 연구소 
-	// 푸는 중
+	InitTotalArea();
 
 	freopen("input.txt", "r", stdin);
 	setbuf(stdout, NULL);
 
-	scanf("%d", &rowSize);
-	scanf("%d", &colSize);
+	cin >> height >> width;
 
-	virusMatrix = (Virus**)malloc(sizeof(Virus*)*rowSize);
-	for (int i = 0; i < rowSize; i++)
-	{
-		virusMatrix[i] = (Virus*)malloc(sizeof(Virus)*colSize);
-	}
+	InitArea();
+	InitUsingArea();
 
-	queue<Virus> queue;
+	Execute();
 
-
-	for (int i = 0; i < rowSize; i++)
-	{
-		for (int j = 0; j < colSize; j++)
-		{
-			scanf("%d", &virusMatrix[i][j].value);
-			virusMatrix[i][j].row = i;
-			virusMatrix[i][j].col = j;
-			virusMatrix[i][j].visited = false;
-			printf("%d ",virusMatrix[i][j].value);
-
-			if (!virusMatrix[i][j].visited && virusMatrix[i][j].value == 2)
-			{
-				virusMatrix[i][j].visited = true;
-				queue.push(virusMatrix[i][j]);
-			}
-		}
-		printf("\n");
-	}
-
-
-	while (!queue.empty())
-	{
-		Virus frontVirus = queue.front();
-		queue.pop();
-
-		printf("queue row %d\n", frontVirus.row);
-		printf("queue col %d\n", frontVirus.col);
-		printf("queue value %d\n", frontVirus.value);
-		printf("queue visited %d\n", frontVirus.visited);
-
-		if (frontVirus.row -1  >= 0)
-		{
-			int curRow = frontVirus.row - 1;
-			if (!virusMatrix[curRow][frontVirus.col].visited && virusMatrix[curRow][frontVirus.col].value == 0)
-			{
-				virusMatrix[curRow][frontVirus.col].visited = true;
-				virusMatrix[curRow][frontVirus.col].value = 2;
-				queue.push(virusMatrix[curRow][frontVirus.col]);
-			}
-		}
-
-		if (frontVirus.row + 1 < rowSize)
-		{
-			int curRow = frontVirus.row + 1;
-			if (!virusMatrix[curRow][frontVirus.col].visited && virusMatrix[curRow][frontVirus.col].value == 0)
-			{
-				virusMatrix[curRow][frontVirus.col].visited = true;
-				virusMatrix[curRow][frontVirus.col].value = 2;
-				queue.push(virusMatrix[curRow][frontVirus.col]);
-			}
-		}
-
-		if (frontVirus.col -1 >= 0)
-		{
-			int curCol = frontVirus.col - 1;
-			if (!virusMatrix[frontVirus.row][curCol].visited && virusMatrix[frontVirus.row][curCol].value == 0)
-			{
-				virusMatrix[frontVirus.row][curCol].visited = true;
-				virusMatrix[frontVirus.row][curCol].value = 2; 
-				queue.push(virusMatrix[frontVirus.row][curCol]);
-			}
-		}
-
-		if (frontVirus.col + 1 < colSize)
-		{
-			int curCol = frontVirus.col + 1;
-			if (!virusMatrix[frontVirus.row][curCol].visited && virusMatrix[frontVirus.row][curCol].value == 0)
-			{
-				virusMatrix[frontVirus.row][curCol].visited = true;
-				virusMatrix[frontVirus.row][curCol].value = 2;
-				queue.push(virusMatrix[frontVirus.row][curCol]);
-			}
-		}
-
-	}
-
-	PrintVirusMatrix(); 
-	CalSafeArea();
+	printf("%d", ans);
 
 	return 0;
 }
