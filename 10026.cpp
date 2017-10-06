@@ -46,19 +46,21 @@ void BFS_Normal(int posX, int posY)
 
 		visited[qX][qY] = 1;
 
+		if(qX > 0)
+			if(matrix[qX - 1][qY] == matrix[qX][qY])
+				searchQ.push(make_pair(qX - 1, qY));
 
-
-		if(qX > 0 && matrix[qX-1][qY] == matrix[qX][qY])
-			searchQ.push(make_pair(qX - 1, qY));
-
-		if (qX < matSize - 1 && matrix[qX + 1][qY] == matrix[qX][qY])
-			searchQ.push(make_pair(qX + 1, qY));
+		if (qX < matSize - 1)
+			if(matrix[qX + 1][qY] == matrix[qX][qY])
+				searchQ.push(make_pair(qX + 1, qY));
 		
-		if (qY > 0 && matrix[qX][qY-1] == matrix[qX][qY])
-			searchQ.push(make_pair(qX, qY - 1));
+		if (qY > 0 )
+			if(matrix[qX][qY - 1] == matrix[qX][qY])
+				searchQ.push(make_pair(qX, qY - 1));
 		
-		if (qY < matSize - 1 && matrix[qX][qY+1] == matrix[qX][qY])
-			searchQ.push(make_pair(qX , qY + 1));
+		if (qY < matSize - 1)
+			if(matrix[qX][qY + 1] == matrix[qX][qY])
+				searchQ.push(make_pair(qX , qY + 1));
 
 	}
 }
@@ -85,34 +87,28 @@ void BFS_AbNormal(int posX, int posY)
 		visited[qX][qY] = 1;
 
 		if (qX > 0 )
-		{
 			if ((matrix[qX - 1][qY] == matrix[qX][qY])  || 
 				((matrix[qX - 1][qY] == 'R' || matrix[qX - 1][qY] == 'G') && (matrix[qX][qY] == 'R' || matrix[qX][qY] == 'G')))
 				searchQ.push(make_pair(qX - 1, qY));
-		}
+		
 	
-
 		if (qX < matSize - 1 )
-		{
 			if((matrix[qX + 1][qY] == matrix[qX][qY]) ||
 				((matrix[qX + 1][qY] == 'R' || matrix[qX + 1][qY] == 'G') && (matrix[qX][qY] == 'R' || matrix[qX][qY] == 'G')))
 				searchQ.push(make_pair(qX + 1, qY));
-		}
+		
 			
-
 		if (qY > 0 )
-		{
 			if ((matrix[qX][qY - 1] == matrix[qX][qY]) || 
 				((matrix[qX][qY - 1] == 'R' || matrix[qX][qY - 1] == 'G') && (matrix[qX][qY] == 'R' || matrix[qX][qY] == 'G')))
 				searchQ.push(make_pair(qX, qY - 1));
-		}
+		
 
 		if (qY < matSize - 1)
-		{
 			if((matrix[qX][qY + 1] == matrix[qX][qY]) || 
 				((matrix[qX][qY + 1] == 'R' || matrix[qX][qY + 1] == 'G') && (matrix[qX][qY] == 'R' || matrix[qX][qY] == 'G')))
 				searchQ.push(make_pair(qX, qY + 1));
-		}
+		
 			
 	}
 }
