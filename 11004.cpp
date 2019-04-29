@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 
-
 #define ARR_MAX 5000001
 int arr[ARR_MAX] = {0,};
 int sorted[ARR_MAX + 1] = { 0, };
