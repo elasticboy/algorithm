@@ -1,48 +1,75 @@
 #include<stdio.h>
 #include<iostream>
 #include<string>
-#include<algorithm>
 
 using namespace std;
-#define ARR_MAX 15
+#define ARR_MAX 15+1
+#define TERM_MAX 5+1
 #define PROFIT_MAX 1000
 
-int term[ARR_MAX + 1] = {0,};
-int profit[ARR_MAX + 1] = { 0, };;
-int dp[ARR_MAX + 1] = { 0, };
-//(1 ≤ Ti ≤ 5, 1 ≤ Pi ≤ 1, 000)
+int arr[ARR_MAX][TERM_MAX] = { 0, };
 int N = 0;
+int res = 0;
+//(1 ≤ Ti ≤ 5, 1 ≤ Pi ≤ 1, 000)
 
-int _max(int val1, int val2) {
-	if (val1 > val2) 
-		return val1;
-	return val2;
+int max(int res, int cur_res) {
+	if (cur_res > res)
+		return cur_res;
+	else
+		return res;
 }
 
-int Dp(int day) {
-	if (day == N + 1)
-		return 0;
-	if (day > N + 1)
-		return (-1)*1111111;
-	if (dp[day] > 0) 
-		return dp[day];
-	//현재 날짜를 고르지 않고 다른 날짜로 넘어갈 경우와 현재 날짜를 선택하고 넘어갈 경우를 나눈다. 
-	dp[day] = _max( Dp(day+1), Dp(day+term[day])+profit[day] );
-	return dp[day];
+int _term(int n) {
+	//현재 인덱스에 비용이 있는 지 탐색 중 
+	for (int i = 1;i <= TERM_MAX;i++)
+	{
+		int term = 0;
+		//비용이 있으면 무조건 하나는 있다
+		if (arr[n][i] > 0)
+			return i;
+	}
+	return 0;
+}
+
+void dfs(int n, int term, int profit) {
+	profit += arr[n][term];
+	res = max(res, profit);
+	int cur_n = n + term;
+	for (int i = cur_n;i <= N;i++)
+	{
+		int term = _term(i);
+		if (i == N && term == 1)
+		{
+			//마지막 날짜에 걸렸을 때, 기간이 1이라면
+			//마지막도 포함한다.
+			profit += arr[i][term];
+			res = max(res, profit);
+			return;
+		}
+
+		//다음 경우가 범위가 넘어갈때
+		if (i >= N)
+			return;
+		//term이 1이 아닌 경우, i는 일정하기에, 
+		//term이 1이 아니면 N+1은 조건을 만족하지 않는다. 
+		if (i + term > N + 1)
+			return;
+
+		dfs(i, term, profit);
+	}
 }
 
 int main() {
 
 	freopen("test_case/4.txt", "r", stdin);
 	scanf("%d", &N);
-	//입력값 받기
-	for (int i = 1;i <= N;i++) 
-	{
-		int t=0, p = 0;
-		scanf("%d%d", &t, &p);
-		term[i] = t;
-		profit[i] = p;
+
+	for (int i = 1;i <= N;i++) {
+		int term, profit;
+		scanf("%d%d", &term, &profit);
+		arr[i][term] = profit; //True
 	}
-	int ans = Dp(1);
-	printf("%d", ans);
+
+	dfs(1, 0, 0);
+	printf("%d", res);
 }
